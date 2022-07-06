@@ -1,14 +1,14 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "bikesharingweb.fullname" . -}}
+{{- $fullName := include "bikes.fullname" . -}}
 {{- $servicePort := .Values.service.port -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    app: {{ template "bikesharingweb.name" . }}
-    chart: {{ template "bikesharingweb.chart" . }}
+    app: {{ template "bikes.name" . }}
+    chart: {{ template "bikes.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 {{- with .Values.ingress.annotations }}
@@ -32,8 +32,11 @@ spec:
       http:
         paths:
           - path: {{ $ingressPath }}
+            pathType: Prefix
             backend:
-              serviceName: {{ $fullName }}
-              servicePort: http
+              service:
+                name: {{ $fullName }}
+                port: 
+                  number: 80
   {{- end }}
 {{- end }}
